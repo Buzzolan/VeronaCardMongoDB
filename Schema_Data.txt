@@ -1,0 +1,22 @@
+POI
+_id:ObjectId
+name:string
+code_device:integer
+accessPOI:[
+    {
+        Data_access_POI:Date
+        Hour_access_POI:Time
+    }
+]
+
+id_card
+_id:ObjectId
+id_card:string
+activation:Date
+type:string
+accessVR:[
+	{
+		Data_access_VR:Date
+		Hour_access_VR:Time
+	}
+]
