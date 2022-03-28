@@ -17,17 +17,20 @@ Struttura intermedia:
     matrice= [{numero_card,attivazione,type,accessVR:[{Poi,data,time},{Poi,data,time},...]]
 Struttura json che voglio in output:
 {
-    _id:veronacard Object
+    
+    id_card:string
     activation:Date
     type:string
-    accessVR:[
-    	{	
-    		POI_access:string
-    		Data_access_VR:Date
-    		Hour_access_VR:Time
-    	}
-    ]
+    	access:[
+    		{	
+    			POI_access:string
+    			Data_access_VR:Date
+    			Hour_access_VR:Time
+    		}
+    		]
 }
+
+"$date":"2003-03-26T10:50:57.240Z"
     
 """
 
@@ -41,12 +44,9 @@ import json
 
  
 
-listObj = []
-listaAccess = []
-POI1={'POI':'casaGiulietta', 'DataAcc':'01-12-11', 'hour':10 }
-POI2={'POI':'casaGiulietta2', 'DataAcc':'01-12-112', 'hour':107}
-listaAccess.append(POI1)
-listaAccess.append(POI2)
+listObj = [] #array dove viene salvata ogni nuova tessera
+listaAccess = [] #array dove viene salvata ogni strisciata che esegue un utente
+
 with open("Test_dati1.csv") as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     
@@ -55,28 +55,56 @@ with open("Test_dati1.csv") as csv_file:
     profile_type=''
     Data_access_vr=''
     Hour_access_vr=''
-    objectVR=''
+    card=''
     
-    
+    #le tessere sono ordinate per numero di tessera, poi per data e infine per ora
     for row in csv_reader:
-        #print(row)
-        if row[4] != id_vr:
-            id_vr= row[4]
+        
+        if row[4] != id_vr:#capisco se ho nuova id_card da registare
             
-            if listaAccess: #true se la lista ha elementi, allora carico quanto registrato fino ad ora
+            if listaAccess: #true se la lista ha elementi e quindi ha registrato almeno un accesso
+            
+                #ora carico tutti gli accessi effettuati da questo utente 
+                
+                activation_format_date={'$date':activation}
+    
+                #carico la nuova tessera con tutti i suoi accessi
+                card={'_id': id_vr,'activation':activation_format_date, 'type':profile_type, 'Info_access':listaAccess }
+                listObj.append(card)
+                listaAccess=[]  #svuoto la lista di accessi
+                
+                
+                
+            #dato che ho nuova card, mi salvo subito la variabile
+            id_vr=row[4]
+            
+            #registro la data di attivazione e il tipo di profilo
+            activation=row[5]
+            profile_type=row[6]
+                
+            
+            
             
             
         
+        #registro tutti gli accessi affettuati con questa attivazione
+        # formato per ora T10:50:57.240Z
+       
+        DataFormat=row[1]+"T"+row[2]+".000Z"
+        print(DataFormat)
+        Data_access_vr={'$date': DataFormat}
+        POI={'POI':row[0] , 'Data_Hour_access':Data_access_vr }
+        listaAccess.append(POI)
+            
         
-        
-        
-        dataTest=''
-        dataTest={'$date': row[5]}
-        card={'_id': row[4], 'activation': dataTest , 'type': row[6], 'accessVR':listaAccess}
-        
-        
-        listObj.append(card)
-        
+    
+     
+#carico ultima tessera con relativa lista accessi
+activation_format_date={'$date':activation}
+#carico la nuova tessera con tutti i suoi accessi
+card={'_id': id_vr, 'activation':activation_format_date, 'type':profile_type, 'Info_access':listaAccess}
+listObj.append(card)
+     
       
 s = json.dumps(listObj)     
 open("prova2.json","w").write(s) 
