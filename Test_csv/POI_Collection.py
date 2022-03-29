@@ -75,7 +75,8 @@ with open("Test_dati_POI.csv") as csv_file:
        
         DataFormat=row[1]+"T"+row[2]+".000Z"
         print(DataFormat)
-        Data_Hour_access_POI={'$date': DataFormat}
+        DataFormat1={'$date': DataFormat}
+        Data_Hour_access_POI={'Data_Hour_access_POI': DataFormat1}
         listaAccess.append(Data_Hour_access_POI)
             
         
