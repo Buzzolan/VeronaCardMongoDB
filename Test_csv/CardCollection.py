@@ -47,7 +47,7 @@ import json
 listObj = [] #array dove viene salvata ogni nuova tessera
 listaAccess = [] #array dove viene salvata ogni strisciata che esegue un utente
 
-with open("Test_dati1.csv") as csv_file:
+with open("Test_dati_ID.csv") as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     
     id_vr=''
@@ -107,7 +107,7 @@ listObj.append(card)
      
       
 s = json.dumps(listObj)     
-open("prova2.json","w").write(s) 
+open("CardCollection.json","w").write(s) 
 '''        
         if row[4] != id_vr: #allora sono in una nuova riga con id ancora da registrare
             
