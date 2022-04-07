@@ -1,0 +1,143 @@
+[{$match: {
+ _id: 'AMO'
+}}, {$set: {
+ startDate: ISODate('2014-06-01T00:00:00.000Z'),
+ endDate: ISODate('2014-06-22T00:00:00.000Z')
+}}, {$set: {
+ dates: {
+  $map: {
+   input: {
+    $range: [
+     0,
+     {
+      $subtract: [
+       {
+        $add: [
+         1,
+         '$endDate'
+        ]
+       },
+       '$startDate'
+      ]
+     },
+     86400000
+    ]
+   },
+   'in': {
+    $add: [
+     '$startDate',
+     '$$this'
+    ]
+   }
+  }
+ }
+}}, {$project: {
+ _id: 1,
+ startDate: 1,
+ endDate: 1,
+ Info_access: {
+  $filter: {
+   input: '$Info_access',
+   as: 'info_sales',
+   cond: {
+    $and: [
+     {
+      $gte: [
+       '$$info_sales.Data_Hour_access_POI',
+       '$startDate'
+      ]
+     },
+     {
+      $lt: [
+       '$$info_sales.Data_Hour_access_POI',
+       '$endDate'
+      ]
+     }
+    ]
+   }
+  }
+ },
+ dates: 1
+}}, {$unwind: {
+ path: '$Info_access'
+}}, {$set: {
+ _id: 1,
+ Accesso_effetuato: {
+  $dateToString: {
+   format: '%d-%m-%Y',
+   date: '$Info_access.Data_Hour_access_POI'
+  }
+ }
+}}, {$group: {
+ _id: '$Accesso_effetuato',
+ count: {
+  $sum: 1
+ },
+ calendar: {
+  $first: '$dates'
+ }
+}}, {$set: {
+ _id: {
+  $dateFromString: {
+   dateString: '$_id',
+   format: '%d-%m-%Y'
+  }
+ }
+}}, {$project: {
+ _id: 0,
+ day_check: {
+  date: '$_id',
+  count: '$count'
+ },
+ calendar: 1
+}}, {$group: {
+ _id: '$calendar',
+ count_date: {
+  $push: {
+   day: '$day_check'
+  }
+ }
+}}, {$unwind: {
+ path: '$_id'
+}}, {$project: {
+ _id: 1,
+ check_sale: {
+  $in: [
+   '$_id',
+   '$count_date.day.date'
+  ]
+ },
+ Date_with_count: {
+  $filter: {
+   input: '$count_date',
+   as: 'oks',
+   cond: {
+    $eq: [
+     '$$oks.day.date',
+     '$_id'
+    ]
+   }
+  }
+ }
+}}, {$set: {
+ Date_with_count: {
+  $cond: {
+   'if': {
+    $gt: [
+     {
+      $size: '$Date_with_count'
+     },
+     0
+    ]
+   },
+   then: '$Date_with_count.day.count',
+   'else': 0
+  }
+ }
+}}, {$unwind: {
+ path: '$Date_with_count'
+}}, {$project: {
+ _id: 0,
+ Date_check: '$_id',
+ number_access: '$Date_with_count'
+}}]
