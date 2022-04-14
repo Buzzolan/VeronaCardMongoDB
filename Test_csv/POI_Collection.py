@@ -35,7 +35,7 @@ import json
 listObj = [] #array dove viene salvata ogni nuovo POI
 listaAccess = [] #array dove viene salvata ogni accesso al POI selezionato
 
-with open("Test_dati_POI.csv") as csv_file:
+with open("Dati2014finePOIfine.csv") as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     
     id_POI=''

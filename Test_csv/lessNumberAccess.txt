@@ -1,0 +1,42 @@
+[{$project: {
+ _id: 1,
+ code_device: 1,
+ Info_access: {
+  $filter: {
+   input: '$Info_access',
+   as: 'date_acces',
+   cond: {
+    $and: [
+     {
+      $gte: [
+       '$$date_acces.Data_Hour_access_POI',
+       ISODate('2014-04-30T00:00:00.000Z')
+      ]
+     },
+     {
+      $lt: [
+       '$$date_acces.Data_Hour_access_POI',
+       ISODate('2014-05-30T00:00:00.000Z')
+      ]
+     }
+    ]
+   }
+  }
+ }
+}}, {$project: {
+ _id: 1,
+ code_device: 1,
+ numberOfAccess: {
+  $cond: {
+   'if': {
+    $isArray: '$Info_access'
+   },
+   then: {
+    $size: '$Info_access'
+   },
+   'else': 'NA'
+  }
+ }
+}}, {$sort: {
+ numberOfAccess: 1
+}}, {$limit: 1}]
