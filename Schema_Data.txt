@@ -9,9 +9,8 @@ accessPOI:[
     }
 ]
 
-id_card
-_id:ObjectId
-id_card:string
+
+_id:string
 activation:Date
 type:string
 accessVR:[

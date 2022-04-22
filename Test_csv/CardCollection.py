@@ -47,7 +47,7 @@ import json
 listObj = [] #array dove viene salvata ogni nuova tessera
 listaAccess = [] #array dove viene salvata ogni strisciata che esegue un utente
 
-with open("Test_dati_ID.csv") as csv_file:
+with open("Dati2014ordinatifineDef.csv") as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     
     id_vr=''
